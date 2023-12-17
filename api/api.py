@@ -49,9 +49,6 @@ def spotifyAuthentication():
 
 @app.route('/spotifyRankedSongs', methods = ['GET'])
 def getRankedSongs():
-    # return { "success": True,
-    #     "songs": [{'Ranking': 1, 'Name': 'Waves', 'Artist': 'Kanye West', 'Image': 'https://i.scdn.co/image/ab67616d0000b2732a7db835b912dc5014bd37f4'},
-    # {'Ranking': 1, 'Name': 'Waves', 'Artist': 'Kanye West', 'Image': 'https://i.scdn.co/image/ab67616d0000b2732a7db835b912dc5014bd37f4'}]}
     if request.method == "GET":
         code = request.args.get('code', None)
         if code is not None:

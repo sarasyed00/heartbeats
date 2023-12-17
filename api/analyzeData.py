@@ -115,9 +115,9 @@ class analyzeData():
         return enrichedRankedData
 
     def formatRankedSongsForHTML(self, rankedSongs):
-        colors = ["#cedad9", "#9eb5b3", "#9ea6a2", "#9eb5a8", "#6e7a73"]
+        colors = ["#cedad9", "#a1c2aa", "#9eb5b3", "#9ea6a2", "#9eb5a8", "#6e7a73", "#badbc6", "#5d807c", "#708c94", "#8999ab"]
         formattedData = rankedSongs.drop(['ID', 'Start', 'End', 'Score', 'ScoreLength', 'SongLength','ArtistId', 'temp'], axis=1)
-        formattedData = formattedData.head(5) #cutdown to top 5 songs
+        formattedData = formattedData.head(10) #cutdown to top 10 songs
         formattedData.insert(0, 'Ranking', range(1, 1 + len(formattedData)))
         formattedData.insert(0, 'BackgroundColor', colors[:len(formattedData)])
         dictionaries = formattedData.to_dict(orient='records')
@@ -131,10 +131,11 @@ class analyzeData():
         return self.rankedSongs
         
     def generateRecommendedPlaylist(self, rankedSongs, access_token):
-        colors = ["#a1af9b", "#6d778a", '#576b94', "#8d8696", "#8c8c8c"]
+        colors = ["#a1af9b", "#93a3a3", "#6f8e94", "#6d778a", '#6f7b94', "#8d8696", "#8c8c8c", "#6f8594", "#a093a3", "#a3939a"]
+    
         num_rows = len(rankedSongs.index)
-        if num_rows > 5:
-            rankedSongs = rankedSongs.head(5) #cutdown to top 5 songs
+        if num_rows > 10:
+            rankedSongs = rankedSongs.head(10) #cutdown to top 10 songs
 
         tracks = rankedSongs['ID'].tolist()
 
@@ -145,7 +146,7 @@ class analyzeData():
 
         response = requests.get(url, headers={"Accept": "application/json", "Content-Type": "application/json", "Authorization": "Bearer %s" % (access_token)})
         if response.status_code != 200:
-            return {'success': False, "error" : response.reason}
+            return {'success': False, "errorMessage" : "ERROR: Can't generate recommended playlist, " + response.reason}
 
         suggested_tracks = response.json()['tracks']
 
@@ -155,7 +156,7 @@ class analyzeData():
         playlist['Image'] = [d['album']['images'][0]['url'] if (len(d['album']) > 0 and len(d['album']['images']) > 0) else "" for d in suggested_tracks]
         playlist = playlist[~playlist.Name.isin(rankedSongs.Name)]
         playlist.insert(0, 'Ranking', range(1, 1 + len(playlist)))
-        playlist = playlist.head(5)
+        playlist = playlist.head(len(tracks))
         playlist.insert(0, 'BackgroundColor', colors[:len(playlist)])
         dictionaries = playlist.to_dict(orient='records')
         return {"success":True, "songs":dictionaries}

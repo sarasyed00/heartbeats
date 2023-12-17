@@ -37,28 +37,29 @@ export default function Home() {
         }
     }, [topPlayedSongs])
 
-    function querySpotifyAuthCode(retries){
-        fetch('/spotifyAuthenticate').then(res => res.json()).then(data => {
-            if (data.success === true){
-                setSpotifyAuthCode(data.code)
-            } else {
-                if (retries > 0){ //wait 5 seconds and try again
-                    setTimeout(function() {
-                        querySpotifyAuthCode(retries-1);
-                      }, 5000);
-                } else {
-                    setErrors(error => {
-                        return [
-                            ...error,
-                            {message: "Please log in and grant access to Spotify data"},
-                        ]
-                    })
-                }
-            }
-        })
-    }
+
 
     useEffect(() => {
+        function querySpotifyAuthCode(retries){
+            fetch('/spotifyAuthenticate').then(res => res.json()).then(data => {
+                if (data.success === true){
+                    setSpotifyAuthCode(data.code)
+                } else {
+                    if (retries > 0){ //wait 5 seconds and try again
+                        setTimeout(function() {
+                            querySpotifyAuthCode(retries-1);
+                          }, 5000);
+                    } else {
+                        setErrors(error => {
+                            return [
+                                ...error,
+                                {message: "Please log in and grant access to Spotify data"},
+                            ]
+                        })
+                    }
+                }
+            })
+        }
         if (isMounted.current){
             querySpotifyAuthCode(5) 
         }
@@ -134,7 +135,7 @@ export default function Home() {
                 <div className="Intro large-container">
                     <Overview/>
                     <Button variant="outline-info" onClick={e => stravaAuthenticate()}>Analyze my most recent workout</Button>
-                    {errors.map(item => <div className="list-padding"><Error key={item.message} message={item.message} /></div>)}
+                    {errors.map(item => <div className="list-upper-padding"><Error key={item.message} message={item.message} /></div>)}
                 </div>
                 <div className = "Blankspace equal-container">
 
