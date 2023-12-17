@@ -57,7 +57,10 @@ def getRankedSongs():
         if code is not None:
             songs = Spotify.getLatestMusic(code)
             songs = analyzeData.getSongs(songs)
-            splits = analyzeData.getSplits()
+            splits = Strava.getSavedWorkout()
+            if splits is None:
+                return {"success":False}
+            splits = analyzeData.getSplits(splits)
             songsScores = analyzeData.getSongScores(songs, splits)
             rankedSongs = analyzeData.calculateSongRankings(songsScores)
             rankedSongs = analyzeData.enrichRankedSongs(rankedSongs, songs)
@@ -72,4 +75,4 @@ def getRecommendedPlaylist():
     if rankedSongs is not None:
         access_token = Spotify.getAuthToken()
         return analyzeData.generateRecommendedPlaylist(rankedSongs, access_token)
-    return {"success":False, "error": "Can't find rankedSongs"}
+    return {"success":False, "errorMessage": "Can't find rankedSongs"}

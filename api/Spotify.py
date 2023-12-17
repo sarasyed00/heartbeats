@@ -71,8 +71,8 @@ class Spotify():
         if response.status_code != 200: #maybe also want to check size of recent played here
             return False
 
-        text_file = open("TestRecentMusic.json", "w")
-        text_file.write(response.text)
-        text_file.close()
+        # text_file = open("TestRecentMusic.json", "w")
+        # text_file.write(response.text)
+        # text_file.close()
 
         return response.json()["items"]

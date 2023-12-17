@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Activity } from "./Activity";
-import {Overview} from "./Overview";
+import { Overview } from "./Overview";
+import { Error } from "./Error";
 import { Song } from "./Song";
 import Button from 'react-bootstrap/Button';
 
@@ -13,18 +14,24 @@ export default function Home() {
 
     const [spotifyAuthCode, setSpotifyAuthCode] = useState("")
 
-    // const [topPlayedSongs, setTopPlayedSongs] = useState([{'Ranking': 1, 'Name': 'Waves', 'Artist': 'Kanye West', 'Image': 'https://i.scdn.co/image/ab67616d0000b2732a7db835b912dc5014bd37f4', 'BackgroundColor': '#b9c9a2'},
-    // {'Ranking': 1, 'Name': 'Waves', 'Artist': 'Kanye West', 'Image': 'https://i.scdn.co/image/ab67616d0000b2732a7db835b912dc5014bd37f4', 'BackgroundColor': '#b9c9a2'},
-    // {'Ranking': 1, 'Name': 'Waves', 'Artist': 'Miley Cyrus', 'Image': 'https://i.scdn.co/image/ab67616d0000b2732a7db835b912dc5014bd37f4', 'BackgroundColor': '#9eb5b3'}])
     const [topPlayedSongs, setTopPlayedSongs] = useState([])
     
     const [recommendedSongs, setRecommendedSongs] = useState([])
+
+    const [errors, setErrors] = useState([])
 
     useEffect(() => {
         if (isMounted.current){
             fetch('/getRecommendedPlaylist').then(res => res.json()).then(data => {
                 if (data.success === true){
                     setRecommendedSongs(data.songs)
+                } else {
+                    setErrors(error => {
+                        return [
+                            ...error,
+                            {message: data.errorMessage},
+                        ]
+                    })
                 }
             })
         }
@@ -39,7 +46,14 @@ export default function Home() {
                     setTimeout(function() {
                         querySpotifyAuthCode(retries-1);
                       }, 5000);
-                } //want to add an else & say never logged in!
+                } else {
+                    setErrors(error => {
+                        return [
+                            ...error,
+                            {message: "Please log in and grant access to Spotify data"},
+                        ]
+                    })
+                }
             }
         })
     }
@@ -69,7 +83,14 @@ export default function Home() {
                     setTimeout(function() {
                         queryStravaAuthCode(retries-1);
                       }, 5000);
-                } //want to add an else & say never logged in!
+                }else {
+                    setErrors(error => {
+                        return [
+                            ...error,
+                            {message: "Please log in and grant access to Strava data"},
+                        ]
+                    })
+                }
             }
         })
     }
@@ -88,6 +109,13 @@ export default function Home() {
                           { date: data.date, distance: data.distance, activeTime: data.activeTime },
                         ]
                       })
+                } else {
+                    setErrors(error => {
+                        return [
+                            ...error,
+                            {message: data.errorMessage},
+                        ]
+                    })
                 }
             })
         }
@@ -106,6 +134,7 @@ export default function Home() {
                 <div className="Intro large-container">
                     <Overview/>
                     <Button variant="outline-info" onClick={e => stravaAuthenticate()}>Analyze my most recent workout</Button>
+                    {errors.map(item => <div className="list-padding"><Error key={item.message} message={item.message} /></div>)}
                 </div>
                 <div className = "Blankspace equal-container">
 

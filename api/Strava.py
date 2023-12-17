@@ -11,6 +11,7 @@ class Strava():
 
     def __init__(self):
       self.stravaAuthCode = None
+      self.workout = None
 
     def getAuthCodeRoute(self):
        url = "http://www.strava.com/oauth/authorize?client_id="
@@ -43,7 +44,8 @@ class Strava():
       hours, minutes = divmod(minutes, 60)
       return '{:d}hrs {:02d}mins {:02d}secs'.format(hours, minutes, seconds)
 
-
+    def getSavedWorkout(self):
+      return self.workout
 
     # Api Call to get most recent workout. Returns boolean indicating success.
     def getLatestWorkout(self, code):
@@ -79,9 +81,10 @@ class Strava():
           Time = response.json()['moving_time']
           Time = self.parseTimeInSeconds(Time)
 
-          text_file = open( "TestRecentActivity.json", "w")
-          text_file.write( response.text)
-          text_file.close()
-          return {"success" : True, "date" : Date, "activeTime" : Time, "distance" : Distance}
-        else:
-          return {"success" : False}
+          # text_file = open( "TestRecentActivity.json", "w")
+          # text_file.write( response.text)
+          # text_file.close()
+          if 'splits_standard' in response.json():
+            self.workout = response.json()
+            return {"success" : True, "date" : Date, "activeTime" : Time, "distance" : Distance}
+        return {"success" : False, "errorMessage" : "Could not retreive data from Strava."}

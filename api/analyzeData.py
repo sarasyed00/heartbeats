@@ -21,8 +21,8 @@ class analyzeData():
         """get song data from json and format
         into pandas dataframe
         """
-        data = json.load(open("/Users/sarasyed/code/react-flask heartbeats/heartbeats/api/TestRecentMusic.json"))['items']
-        # data = songs
+        # data = json.load(open("/Users/sarasyed/code/heartbeats/api/TestRecentMusic.json"))['items']
+        data = songs
         songs = pd.DataFrame(columns=['Name', 'ID', 'Start', 'End', 'Score', 'ScoreLength', 'SongLength', 'Artist', 'ArtistId', 'Image'])
         
         songs['Name'] = [d['track']['name'] for d in data]
@@ -44,13 +44,13 @@ class analyzeData():
         
         return(songs)
 
-    def getSplits(self):
+    def getSplits(self, data):
         """get splits data from json and format
         into pandas dataframe
         """
-        data = json.load( open( "/Users/sarasyed/code/react-flask heartbeats/heartbeats/api/TestRecentActivity.json") )
-        if 'splits_standard' not in data:
-            return("No splits data for this activity") #think about how want to handle this
+        # data = json.load( open( "/Users/sarasyed/code/heartbeats/api/TestRecentActivity.json") )
+        # if 'splits_standard' not in data:
+        #     return("No splits data for this activity") #think about how want to handle this
 
         splits = pd.json_normalize(data['splits_standard'])
         starts = []
@@ -117,7 +117,7 @@ class analyzeData():
     def formatRankedSongsForHTML(self, rankedSongs):
         colors = ["#cedad9", "#9eb5b3", "#9ea6a2", "#9eb5a8", "#6e7a73"]
         formattedData = rankedSongs.drop(['ID', 'Start', 'End', 'Score', 'ScoreLength', 'SongLength','ArtistId', 'temp'], axis=1)
-        formattedData.head(5) #cutdown to top 5 songs
+        formattedData = formattedData.head(5) #cutdown to top 5 songs
         formattedData.insert(0, 'Ranking', range(1, 1 + len(formattedData)))
         formattedData.insert(0, 'BackgroundColor', colors[:len(formattedData)])
         dictionaries = formattedData.to_dict(orient='records')
@@ -131,7 +131,6 @@ class analyzeData():
         return self.rankedSongs
         
     def generateRecommendedPlaylist(self, rankedSongs, access_token):
-        # colors = ["#a1af9b", "#3e4f6d", '#313f5d', "#534961", "#8c8c8c"]
         colors = ["#a1af9b", "#6d778a", '#576b94', "#8d8696", "#8c8c8c"]
         num_rows = len(rankedSongs.index)
         if num_rows > 5:
