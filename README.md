@@ -1,8 +1,7 @@
 # Overview:
 
 - This application connects user's Strava and Spotify accounts to analyze their most recent workout and the music they listened to during it. We rank the songs the user listened to during their last workout based on the amount of output they produced while listneing to it. For outdoor run workouts, this output takes into consideration both user's running speed and incline. These tops songs are then used to generate a playlist of new songs that we believe will encourage high output for their next workout.
-- Video demo of the application: https://github.com/sarasyed00/heartbeats/assets/61920970/f6dd7eda-efa9-4972-9157-3e68f6283956
-
+- Video demo of the application: https://github.com/sarasyed00/heartbeats/assets/61920970/11da2886-f4e4-4365-925a-3671a909d561
 
 
 # How to run:
